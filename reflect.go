@@ -95,9 +95,9 @@ func inspect(model interface{}, opt *Config) []StructField {
 		if kind == reflect.Struct && opt.Recursive && !noDive {
 			embedded := inspect(value, opt)
 
-			for i, e := range embedded {
+			for _, e := range embedded {
 				e.FieldName = name + opt.EmbeddedSep + e.FieldName
-				e.Index = append(index, i)
+				e.Index = append(index, e.Index...)
 				r = append(r, e)
 			}
 			if len(embedded) != 0 {

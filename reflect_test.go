@@ -23,6 +23,10 @@ type MoreInfo struct {
 	Name    string
 }
 
+type Embedded struct {
+	Details MyStruct
+}
+
 func Test_RecursiveFalse(t *testing.T) {
 	testStruct := &MyStruct{
 		Address: "123",
@@ -74,6 +78,14 @@ func Test_RecursiveTrue(t *testing.T) {
 	assert.Equal(t, "info_name", name.FieldName, "FieldName is correct")
 	assert.Equal(t, false, name.IsZero, "Field is zero")
 	assert.Equal(t, reflect.String, name.Kind, "Field is kind int")
-	assert.Equal(t, []int{3, 1}, name.Index, "Index is correct")
+	assert.Equal(t, []int{3, 2}, name.Index, "Index is correct")
+}
 
+func Test_Index(t *testing.T) {
+	testStruct := &Embedded{Details:MyStruct{Info: MoreInfo{ZipCode: "12345"}}}
+	r := Inspect(testStruct, &Config{Recursive: true, NamingScheme: SnakeCase, EmbeddedSep: "_"})
+
+	assert.Equal(t, 7, len(r), "Number of struct fields")
+	zip := r[3]
+	assert.Equal(t, []int{0, 3, 0}, zip.Index)
 }
