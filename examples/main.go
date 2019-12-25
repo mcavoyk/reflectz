@@ -9,12 +9,13 @@ import (
 
 type MyStruct struct {
 	ID    int     `json:"id"`
-	Email string  `json:"email"`
+	Email string  `json:"email,omitempty"`
 	Info  Another `json:"info"`
 }
 
 type Another struct {
-	Address string   `reflectz:"-"`
+	Address string `reflectz:"-"`
+	Extra   int
 	Details []string `json:"list"`
 }
 
@@ -42,6 +43,7 @@ func main() {
 	}
 	// {FieldName:id Kind:int Type:int Tags:json:"id" Index:[0] Value:10 IsZero:false}
 	// {FieldName:email Kind:string Type:string Tags:json:"email" Index:[1] Value:foo@bar.com IsZero:false}
+	// {FieldName:info_extra Kind:int Type:int Tags: Index:[2 1] Value:0 IsZero:true}
 	// {FieldName:info_list Kind:slice Type:[]string Tags:json:"list" Index:[2 0] Value:[] IsZero:true}
 
 	// Example setting a field

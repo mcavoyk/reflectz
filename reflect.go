@@ -2,6 +2,7 @@ package reflectz
 
 import (
 	"reflect"
+	"strings"
 
 	"github.com/iancoleman/strcase"
 )
@@ -121,7 +122,8 @@ func inspect(model interface{}, opt *Config) []StructField {
 
 func fieldName(field reflect.StructField, opt *Config) string {
 	if tagName, tagExists := field.Tag.Lookup(opt.NamingTag); tagExists {
-		return tagName
+		// name must be first element of struct tag
+		return strings.SplitN(tagName, ",", 2)[0]
 	}
 	name := field.Name
 	switch opt.NamingScheme {

@@ -10,7 +10,7 @@ import (
 
 type MyStruct struct {
 	Address string `foo:"customTag"`
-	Email   string
+	Email   string `foo:"email,omitempty"`
 	ID      int
 	Info    MoreInfo
 	Details []string
@@ -35,14 +35,20 @@ func Test_RecursiveFalse(t *testing.T) {
 		Born:    time.Now(),
 	}
 
-	r := Inspect(testStruct, &Config{Recursive: false, NamingScheme: PascalCase})
+	r := Inspect(testStruct, &Config{
+		Recursive:    false,
+		NamingScheme: PascalCase,
+		NamingTag:    "foo",
+	})
 
 	assert.Equal(t, 6, len(r), "Number of struct fields")
 	address := r[0]
 	assert.Equal(t, testStruct.Address, address.Value, "Values are equal")
-	assert.Equal(t, "Address", address.FieldName, "FieldName is correct")
+	assert.Equal(t, "customTag", address.FieldName, "FieldName is correct")
 	assert.Equal(t, false, address.IsZero, "Field is not zero")
 	assert.Equal(t, reflect.String, address.Kind, "Field is kind string")
+	email := r[1]
+	assert.Equal(t, "email", email.FieldName, "FieldName contains first element of struct tag")
 	id := r[2]
 	assert.Equal(t, testStruct.ID, id.Value, "Values are equal")
 	assert.Equal(t, "ID", id.FieldName, "FieldName is correct")
@@ -82,7 +88,7 @@ func Test_RecursiveTrue(t *testing.T) {
 }
 
 func Test_Index(t *testing.T) {
-	testStruct := &Embedded{Details:MyStruct{Info: MoreInfo{ZipCode: "12345"}}}
+	testStruct := &Embedded{Details: MyStruct{Info: MoreInfo{ZipCode: "12345"}}}
 	r := Inspect(testStruct, &Config{Recursive: true, NamingScheme: SnakeCase, EmbeddedSep: "_"})
 
 	assert.Equal(t, 7, len(r), "Number of struct fields")
